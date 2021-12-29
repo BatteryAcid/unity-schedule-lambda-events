@@ -1,24 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 // This class shouldn't handle any networking, just local actions on the game object
 public class Temple : MonoBehaviour, IBuildableObject
 {
-    private bool isBuilding = false;
-
-    //public static string BuildableName = "temple";
     private const string GameObjectName = "PressurePad";
     private const string InnerPlatformName = "PressurePadInner";
-    
+    private const string BuildId = "temple";
+
     private GameObject _templeObject;
     private Transform _innerPlatform;
     private Vector3 _innerPlatformStartPosition;
     private Vector3 _innerPlatformBuildCompletePosition;
     private float _elapsedBuildTime = 0f;
     private string _platformMovementDirection = "down";
+    private bool isBuilding = false;
     private bool _endBuildAnimation = false;
 
+    // kickoff build animations, etc
     public void StartBuild()
     {
         _templeObject.SetActive(true);
@@ -35,25 +33,22 @@ public class Temple : MonoBehaviour, IBuildableObject
         isBuilding = true;
     }
 
-    public string GetJsonData()
-    {
-        BuildId buildId = new BuildId("temple"); // TODO: move to constant
-        string jsonPostData = JsonUtility.ToJson(buildId);
-        return jsonPostData;
-    }
-
+    // end build animation and perform any after build cleanup
     public void EndBuild()
     {
-        Debug.Log("ending build...");
-        // if isBuilding is still not complete, then force finish animation...
+        Debug.Log("Ending build...");
+
+        // setting to true allows the animation to end at the bottom
         _endBuildAnimation = true;
     }
 
-    public string GetComponentName()// TODO: is this needed?
+    public string GetMessageAsJson()
     {
-        return "PressurePad";
+        ScheduleEventMessage scheduleEventMessage = new ScheduleEventMessage(BuildId);
+        string jsonPostData = JsonUtility.ToJson(scheduleEventMessage);
+        return jsonPostData;
     }
-
+  
     void Start()
     {
         _templeObject = GameObject.Find(GameObjectName);
@@ -84,20 +79,13 @@ public class Temple : MonoBehaviour, IBuildableObject
             if (_platformMovementDirection == "down")
             {
                 _innerPlatform.transform.position
-                    = Vector3.Lerp(_innerPlatformStartPosition, _innerPlatformBuildCompletePosition, _elapsedBuildTime / GetBuildTimeInSeconds());
+                    = Vector3.Lerp(_innerPlatformStartPosition, _innerPlatformBuildCompletePosition, _elapsedBuildTime / GetAnimationTimeInSeconds());
             }
             else
             {
                 _innerPlatform.transform.position
-                    = Vector3.Lerp(_innerPlatformBuildCompletePosition, _innerPlatformStartPosition, _elapsedBuildTime / GetBuildTimeInSeconds());
+                    = Vector3.Lerp(_innerPlatformBuildCompletePosition, _innerPlatformStartPosition, _elapsedBuildTime / GetAnimationTimeInSeconds());
             }
-            
-            // TODO: kill animation based on received notification
-            // TODO: create a timeout fallback incase connection fails?  maybe not, only a demo...
-            //if (_elapsedBuildTime >= GetBuildTimeInSeconds())
-            //{
-            //    isBuilding = false;
-            //}
         }
     }
 
@@ -110,18 +98,8 @@ public class Temple : MonoBehaviour, IBuildableObject
         }
     }
 
-    public float GetBuildTimeInSeconds()
+    public float GetAnimationTimeInSeconds()
     {
         return 3f;
-    }
-
-    public void SetIsBuilding(bool isBuildingIn)
-    {
-        this.isBuilding = isBuildingIn;
-    }
-
-    public bool GetIsBuilding()
-    {
-        return isBuilding;
     }
 }

@@ -15,8 +15,7 @@ public class ApiManager : MonoBehaviour
         webRequest.uploadHandler = new UploadHandlerRaw(formData);
         webRequest.SetRequestHeader("Content-Type", "application/json");
 
-        // add header so we know where the reqest came from, if reusing same lambda function for both API GW and Step Functions
-        // TODO: not sure if this is necessary, but if so come up with better header name
+        // add header so we know where the reqest came from, if reusing same lambda function for both API GW and Step Function
         webRequest.SetRequestHeader("source", "unity");
 
         await webRequest.SendWebRequest();
@@ -36,17 +35,5 @@ public class ApiManager : MonoBehaviour
         webRequest.Dispose();
 
         return isuccess;
-    }
-}
-
-// TODO: move this to its own class
-[System.Serializable]
-public class BuildId
-{
-    public string buildId;
-    public BuildId() { }
-    public BuildId(string buildIdIn)
-    {
-        this.buildId = buildIdIn;
     }
 }

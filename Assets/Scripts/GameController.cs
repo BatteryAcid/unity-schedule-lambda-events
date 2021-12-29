@@ -17,7 +17,7 @@ public class GameController : MonoBehaviour
         buildTempleButton = GameObject.Find("BuildTemple").GetComponent<Button>();
         buildTempleButton.onClick.AddListener(OnBuildTemplePressed);
 
-        buildableObjectManager = new BuildableObjectManager(FindObjectOfType<ApiManager>(), FindObjectOfType<SQSManager>());
+        buildableObjectManager = new BuildableObjectManager(FindObjectOfType<ApiManager>());
     }
 
     // Update is called once per frame
@@ -29,25 +29,22 @@ public class GameController : MonoBehaviour
         }
     }
 
+    private void BuildComplete()
+    {
+        Debug.Log("Game controller build complete");
+        buildInProgress = false;
+        buildTempleButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Build Temple";
+        buildTempleButton.enabled = true;
+    }
+
     public async void OnBuildTemplePressed()
     {
         Debug.Log("Build temple pressed");
         buildInProgress = true;
         buildTempleButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Building...";
 
+        
         bool isSuccess = await buildableObjectManager.BuildObject(FindObjectOfType<Temple>());
-        if (isSuccess)
-        {
-            Debug.Log("Game controller build complete");
-            buildInProgress = false;
-            buildTempleButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Build Temple";
-            buildTempleButton.enabled = true;
-        } else
-        {
-            Debug.Log("Game controller build failed");
-            buildInProgress = false;
-            buildTempleButton.GetComponentInChildren<TMPro.TextMeshProUGUI>().text = "Build Temple";
-            buildTempleButton.enabled = true;
-        }
+        BuildComplete();
     }
 }
