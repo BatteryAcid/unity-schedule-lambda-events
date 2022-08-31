@@ -16,6 +16,10 @@ Helpful if you want to schedule an action to be ran in the future, for your Unit
 * https://github.com/BatteryAcid/unity-schedule-lambda-events/blob/master/Assets/Lambda/index.js
 * Make sure to update the STATE_MACHINE_ARN variable with your details
 
+## 👋 Let's talk shop 👇  
+[Discord] https://discord.gg/psjbBDvNBK  
+[Twitter] https://twitter.com/BatteryAcidDev
+
 ## Required Plugins
 
 * NONE
